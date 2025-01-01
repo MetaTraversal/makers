@@ -1,6 +1,6 @@
 let vendorz = {"ad":'345'};
 
-console.log(vendorz)
+// console.log(vendorz)
 function mandelbrot(cX, cY, maxIter) {
     let zX = 0;
     let zY = 0;

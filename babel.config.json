@@ -1,13 +1,23 @@
 {
-  "presets": [
+  "presets": ["@babel/preset-env", "@babel/preset-react"],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
     [
-      "@babel/preset-env",
+      "module-resolver",
       {
-        "useBuiltIns": "usage",
-        "corejs": "3.6.5"
+        "root": ["./src"],
+        "alias": {
+          "@assets": "./src/js/app/assets",
+          "@components": "./src/js/app/components",
+          "@config": "./src/js/app/config",
+          "@constants": "./src/js/app/constants",
+          "@context": "./src/js/app/context",
+          "@routes": "./src/js/app/routes",
+          "@utils": "./src/js/app/utils",
+          "@views": "./src/js/app/views",
+          "@styles": "./src/scss"
+        }
       }
-    ],
-    ["@babel/preset-react"]
-  ],
-  "plugins": ["@babel/plugin-transform-runtime"]
+    ]
+  ]
 }

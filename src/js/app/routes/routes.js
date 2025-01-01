@@ -4,13 +4,13 @@ import { createBrowserRouter } from "react-router-dom";
 import { Navbar, Sidebar, Footer, Header } from "../components";
 import { Home, Body, Profile, NotFound, Posts } from "../views";
 
-const routes = createBrowserRouter([
+export const routes = createBrowserRouter([
   {
     path: "/",
     element: (
       <>
-        <Navbar />
-        {/* <Header /> */}
+        {/* <Navbar /> */}
+        <Header />
         <Sidebar />
         <Home />
         <Footer />
@@ -33,12 +33,10 @@ const routes = createBrowserRouter([
         path: "posts/:slug_name",
         element: <Posts />,
       },
-      { 
+      {
         path: "*",
         element: <NotFound />,
       },
     ],
   },
 ]);
-
-export default routes;

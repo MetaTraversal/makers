@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
 
 import "@styles/style.scss";
-import { DataContext } from "../../utils";
-import { AppConfig } from "../../config/appConfig";
+import { AppConfig } from "../../config";
+import { DataContext } from "../../context";
 
-const Navbar = () => {
+export const Navbar = () => {
   const { activeLanguages, menuData, lang, setLang } = useContext(DataContext);
   const [showMenu, setShowMenu] = useState(false);
   const [navbarMenus, setNavbarMenus] = useState([]);
@@ -29,15 +29,19 @@ const Navbar = () => {
   }
 
   function settingMenuData() {
-    let items = menuData.filter((item) => item?.slug === "main-menu");
-    items = items[0].items;
-    console.log("main menus", items);
+    let items;
+    menuData?.filter((item) => {
+      if (item?.slug === "main-menu") {
+        items = item?.items;
+      }
+    });
+    // console.log("main menus", items);
 
     const parents = {};
     const children = [];
     const grandchildren = [];
 
-    items.forEach((item) => {
+    items?.forEach((item) => {
       const { ID, menu_item_parent } = item;
       if (menu_item_parent === "0") {
         parents[ID] = {
@@ -51,14 +55,14 @@ const Navbar = () => {
       }
     });
 
-    children.forEach((child) => {
+    children?.forEach((child) => {
       const { menu_item_parent } = child;
       if (parents[menu_item_parent]) {
         parents[menu_item_parent].childItems.push(child);
       }
     });
 
-    grandchildren.forEach((grandchild) => {
+    grandchildren?.forEach((grandchild) => {
       const { menu_item_parent } = grandchild;
       let parent = Object.values(parents);
       parent = parent.find((parent) =>
@@ -289,5 +293,3 @@ const Navbar = () => {
     </header>
   );
 };
-
-export default Navbar;

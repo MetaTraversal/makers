@@ -1,3 +1,3 @@
-import DataContext from "./DataContext";
-
-export { DataContext };
+export * from "./GetDeviceType";
+export * from "./ConvertData";
+export * from "./ClipBoard";

@@ -1,7 +1,7 @@
 import React from "react";
 import ShimmerImg from "./../../assets/images/ShimmerImg.jpeg";
 
-const Shimmer = () => {
+export const Shimmer = () => {
   return (
     <>
       <div className="img-container">
@@ -10,5 +10,3 @@ const Shimmer = () => {
     </>
   );
 };
-
-export default Shimmer;

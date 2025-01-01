@@ -188,7 +188,7 @@ function get_media_data_by_id($id){//this function builds the data for a lean js
 	
 		The meta data properties are only accessible inside a loop for some dumb reason.
 	*/
-	if(strpos($mime,'mage/') && !strpos($mime,'svg')){ // the i is left of so the strpos returns a postive value
+	if(strpos($mime,'image/') && !strpos($mime,'svg')){ // the i is left of so the strpos returns a postive value
 		$meta_data = array();
 		foreach($meta as $key => $value){
 			if($key == 'width'){
@@ -369,7 +369,7 @@ add_action( 'rest_api_init', 'register_properties_3D' );
 function get_attachment_path($id){
 
 	$url = wp_upload_dir();
-	$path = $url['baseurl']."/";
+	$path = $url['path']."/";
     $uploads_path =  $url['baseurl']."/";
 	$attachment_path = str_replace($path,"",wp_get_attachment_url($id));
 	$attachment_path= str_replace("-scaled","",$attachment_path);

@@ -1,7 +1,48 @@
+.a-canvas {
+}
 
-.a-enter-vr-button {
-    position: fixed !important;
-    bottom: 20px !important;
-    right: 20px !important;
+.a-grab-cursor {
+}
+
+.a-mouse-cursor-hover {
+}
+
+.a-loader-title {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  color: #FF3D00;
+  // background-color: antiquewhite;
+  // text-align: center;
+  // animation: textLoad 2s linear infinite;
+  // -webkit-animation: textLoad 2s linear infinite;
+}
+
+@keyframes textLoad {
+  0% {
+    transform: rotate(0deg);
   }
-  
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes textLoad {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+.a-orientation-modal {
+}
+.a-enter-ar {
+}
+.a-enter-vr {
+}
+.a-enter-vr-button {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+}

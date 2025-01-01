@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import "@styles/style.scss";
-import { DataContext } from "../../utils";
-import { AppConfig } from "../../config/appConfig";
+import { AppConfig } from "../../config/AppConfig";
+import { DataContext } from "../../context";
 
-const Header = () => {
+export const Header = () => {
   const [mainMenus, setMainMenus] = useState([]);
   const [parentMenus, setParentMenus] = useState([]);
   const [childMenus, setChildMenus] = useState([]);
@@ -15,22 +15,48 @@ const Header = () => {
     menuData.filter((item) => {
       if (item?.slug == "main-menu") {
         setMainMenus(item?.items);
-        item?.items?.map((menuItem) => {
-          let parent = [];
-          let child = [];
-          if (menuItem?.menu_item_parent === "0") {
-            parent.push(menuItem);
-            // console.log("Parent menu", parent);
-            setParentMenus(parent);
-          } else {
-            child.push(menuItem);
-            // console.log("child menu", child);
-            setChildMenus(child);
-          }
-        });
       }
     });
   }, [menuData, lang]);
+
+  const SubNestedMenus = ({ items }) => {
+    console.log("SubNested Menus Item", items);
+    return (
+      items.length > 0 && (
+        <ul className="dropdown-menu dropdown__content subNested-Menus">
+          {items.map((childItem) => (
+            <li key={childItem.ID} className="nav-item">
+              <Link className="dropdown-item" to={childItem.url}>
+                {childItem.title}
+              </Link>
+              {/* <NestedMenu
+                items={items.filter(
+                  (subItem) => subItem.menu_item_parent == childItem.ID
+                )}
+              /> */}
+            </li>
+          ))}
+        </ul>
+      )
+    );
+  };
+
+  const NestedMenu = ({ items }) => {
+    // console.log("Nested Item", items);
+    return (
+      items?.length > 0 && (
+        <ul className="dropdown-menu dropdown__content">
+          {items.map((childItem) => (
+            <li key={childItem?.ID} className="nav-item">
+              <Link className="dropdown-item" to={childItem?.url}>
+                {childItem?.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )
+    );
+  };
 
   return (
     <header className="App-header">
@@ -45,7 +71,7 @@ const Header = () => {
             {AppConfig.SITE_TITLE ? (
               <h4 className="title-head"> {AppConfig.SITE_TITLE}</h4>
             ) : (
-              <h4 className="title-head"> Site Title </h4>
+              <h4 className="title-head"> WebXR By - PowerSimple </h4>
             )}
           </div>
         </Link>
@@ -70,38 +96,33 @@ const Header = () => {
                 {
                   /* The main dropdown menu items of the Navbar */
 
-                  mainMenus?.map((menusItem, index) => {
-                    let parnetMenuID = menusItem?.menu_item_parent;
-                    let childMenu = [];
-
-                    return (
-                      parnetMenuID === "0" && (
-                        <li className="nav-item dropdown " key={index}>
-                          <Link
-                            className="dropdownbtn nav-link active"
-                            to={menusItem?.url}
-                          >
-                            {menusItem?.title}
-                          </Link>
-                          {parnetMenuID !== "0" && (
-                            <ul className="dropdown-menu dropdown__content">
-                              <li className="nav-item">
-                                <Link className="dropdown-item" href="#">
-                                  {menusItem?.title}
-                                </Link>
-                              </li>
-                            </ul>
-                          )}
-                        </li>
-                      )
-                    );
-                  })
+                  mainMenus?.length > 0 &&
+                    mainMenus?.map((menuItem) => {
+                      if (menuItem.menu_item_parent === "0") {
+                        return (
+                          <li className="nav-item dropdown" key={menuItem.ID}>
+                            <Link
+                              className="dropdownbtn nav-link active"
+                              to={menuItem.url}
+                            >
+                              {menuItem.title}
+                            </Link>
+                            <NestedMenu
+                              items={mainMenus.filter(
+                                (childItem) =>
+                                  childItem.menu_item_parent == menuItem.ID
+                              )}
+                            />
+                          </li>
+                        );
+                      }
+                    })
                 }
 
                 {
                   /* The activeLanguages items of the Navbar */
-                  activeLanguages && (
-                    <li className="nav-item dropdown ">
+                  activeLanguages?.length > 0 && (
+                    <li className="nav-item dropdown">
                       <Link className="dropdownbtn nav-link active" to="#">
                         Languages
                       </Link>
@@ -135,5 +156,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

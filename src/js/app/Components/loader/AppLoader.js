@@ -2,12 +2,12 @@ import React from "react";
 
 import "@styles/style.scss";
 
-const AppLoader = () => {
+export const AppLoader = () => {
   return (
-    <div className="App-Loader container">
-      <h1 className="h1 text-center">Loading!</h1>
+    <div className="appLoader">
+      <div className="loaderCircle"></div>
+       <span className="loaderText">Loading...</span>
     </div>
   );
 };
 
-export default AppLoader;

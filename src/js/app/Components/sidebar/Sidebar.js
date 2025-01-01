@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import "@styles/style.scss";
 
-function Sidebar() {
+export function Sidebar() {
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
 
   const handleAccessibilityButtonClick = () => {
@@ -172,5 +172,3 @@ function Sidebar() {
     </div>
   );
 }
-
-export default Sidebar;

@@ -1,25 +1,24 @@
-const webpack = require("webpack");
-const path = require("path");
 const glob = require("glob");
+const path = require("path");
+// const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const IgnoreEmitPlugin = require("ignore-emit-webpack-plugin");
 const BrowserSyncPlugin = require("browser-sync-webpack-plugin");
-const ModuleResolverPlugin = require("babel-plugin-module-resolver");
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
-const proxyUrl = "https://makers:8893/";
+const isProduction = process.env.NODE_ENV === "production";
+
+const proxyUrl = "https://makers/";
 
 function getEntries(pattern, outputName) {
   const files = glob.sync(pattern);
   const entries = {};
 
   if (files.length > 0) {
-    entries[outputName] = files.reduce((acc, file) => {
-      acc.push("./" + file);
-      return acc;
-    }, []);
+    entries[outputName] = files.map((file) => `./${file}`);
   }
 
   return entries;
@@ -33,67 +32,68 @@ const common = {
   module: {
     rules: [
       {
-        test: /\.(?:js|mjs|cjs)$/,
+        test: /\.(?:js|mjs|cjs|ts|jsx|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
-          options: {
-            presets: [
-              ["@babel/preset-env", { targets: "defaults" }],
-              ["@babel/preset-react"],
-            ],
-            plugins: ['@babel/plugin-transform-runtime',
-            [
-              "module-resolver",
-              {
-                "root": ["./src"],
-                "alias": {
-                  // Add your module aliases here
-                  "@assets": "./src//js/app/assets",
-                  "@components": "./src/js/app/components",
-                  "@views": "./src/js/app/views",
-                  "@config": "./src/js/app/config",
-                  "@utils": "./src/js/app/utils",
-                  "@styles": "./src/scss",
-                }
-              }
-            ]
-
-      ]
-          },
         },
       },
       {
-        test: /\.s[ac]ss$/i,
+        test: /\.((?:sa|sc|c)ss)$/i,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
             options: { publicPath: "" },
           },
+          "style-loader",
           "css-loader",
           "postcss-loader",
           "sass-loader",
         ],
       },
       {
-        test: /\.css$/i,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: { publicPath: "" },
-          },
-          "css-loader",
-          "postcss-loader",
-          "sass-loader",
-        ],
-      },
-      {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|jpeg|gif|glb|gltf)$/i,
+        test: /\.(?:eot|svg|ttf|woff|woff2|png|jpg|jpeg|gif|glb|gltf)$/i,
         type: "asset",
       },
     ],
   },
   plugins: [
+    // new HtmlWebpackPlugin({
+    //   template: path.resolve(__dirname, "index.php"), // Path to your PHP template file
+    //   filename: "index.php", // Output filename for the generated PHP file
+    //   // title: 'My App', // Title for the HTML document (optional)
+    //   // meta: {
+    //   //   description: 'My application', // Add meta tags (optional)
+    //   //   // Add more meta tags as needed...
+    //   // },
+    //   inject: false,
+    //   // Function to manipulate HTML content before it gets written to the file
+    //   // minify: false,
+    //   templateContent: ({ htmlWebpackPlugin }) => {
+    //     const headerContent = `<?php get_header(); ?>`;
+    //     const footerContent = `<?php get_footer(); ?>`;
+    //     const bodyContent = `
+    //     <!-- root tag for react-app content -->
+    //     <div id="root"></div>
+
+    //     <!-- <div id="main-content"> -->
+    //       <?php
+    //         // if (have_posts()) :
+    //         //   while (have_posts()) : the_post();
+    //         //     the_content();
+    //         //   endwhile;
+    //         // endif;
+    //       ?>
+    //     <!-- </div> -->`; // Get the main content from the original template
+
+    //     return `
+    //     ${headerContent}
+    //     ${bodyContent}
+    //     ${footerContent}
+    //     `;
+    //   },
+    //   // Other configuration options can be added as needed
+    // }),
     new MiniCssExtractPlugin({
       filename: (data) => {
         return data.chunk.name === "style" ? "style.css" : "style.min.css";
@@ -135,7 +135,7 @@ const common = {
 const developmentConfig = {
   ...common,
   mode: "development",
-  devtool: false,
+  devtool: "eval-cheap-source-map",
   entry: () => {
     return {
       ...getEntries("src/js/app/*.js", "app"),
@@ -151,7 +151,7 @@ const developmentConfig = {
       open: false,
       reloadOnRestart: true,
     }),
-    // new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin(),
   ],
   optimization: {
     minimize: false,
@@ -164,7 +164,7 @@ const developmentConfig = {
             comments: true,
           },
         },
-        extractComments: true,
+        extractComments: true, // Extract comments into a separate file
       }),
       new CssMinimizerPlugin({
         include: /\.css$/,
@@ -195,17 +195,21 @@ const productionConfig = {
     };
   },
   optimization: {
-    minimize: false,
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         include: /\.min\.js$/,
         terserOptions: {
-          compress: false,
           format: {
-            comments: true,
+            comments: false,
           },
+          compress: {
+            drop_console: true, // Drop console.* statements
+            drop_debugger: true,
+          },
+          // mangle: true,
         },
-        extractComments: true,
+        extractComments: false, // Do not extract comments into a separate file
       }),
       new CssMinimizerPlugin({
         include: /style\.min\.css$/,
@@ -223,4 +227,4 @@ const productionConfig = {
   },
 };
 
-module.exports = [developmentConfig, productionConfig];
+module.exports = isProduction ? productionConfig : developmentConfig;
